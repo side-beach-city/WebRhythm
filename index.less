@@ -1,0 +1,47 @@
+@bg: #202020;
+@text: #FFFDE7;
+
+body{
+  background-color: @bg;
+  color: @text;
+}
+
+#playview{
+  border: 1px solid @text;
+  width: 80%;
+  height: ~"calc(100vh - 64px)";
+  margin: auto;
+  display: table;
+  border-collapse: collapse;
+  .row{
+    display: table-row;
+    &::before{
+    content: attr(id);
+    margin-left: 8px;
+    font-size: 180%;
+    opacity: 0.3;
+    display: block; 
+    position: absolute;
+    }
+    .cell{
+      display: table-cell;
+      border: 1px solid @text;
+      &.on{
+        border-color: @bg;
+        background-color: @text;
+        color: @bg;
+      }
+      &.note{
+        border-color: @bg;
+        background-color: @text;
+        color: @bg;
+      }
+    }
+  }
+}
+
+// footer
+
+#toolbar{
+  margin: 12px 24px;
+}
