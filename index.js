@@ -12,6 +12,9 @@ function mtof(midi) {
 }
 
 function init(){
+  /**
+   * 初期化処理
+   */
   let playview = document.getElementById("playview");
   let scalesN = scales.concat();
   scalesN.reverse();
@@ -45,6 +48,11 @@ function noteToggle(){
 }
 
 function tick(){
+  /**
+   * タイミングごとの処理。
+   * 再生中は音声を再生する
+   * タイミングに指定された秒数経過ごとに呼び出される。
+   */
   if(playState){
     let last = null;
     if(last >= 0){
@@ -68,6 +76,10 @@ function tick(){
 }
 
 function play(hz) {
+  /**
+   * 任意の周波数で発声する
+   * hz...周波数
+   */
   var osciillator = audioCtx.createOscillator();
   osciillator.type = "square";
   osciillator.frequency.value = hz;
@@ -81,6 +93,9 @@ function play(hz) {
 }
 
 function saveMap(){
+  /**
+   * ノート設定をlocalStorageに保存する
+   */
   let data = {}
   scales.forEach((n) => {
     let r = [...Array(notes).keys()].filter((i) => {
@@ -94,6 +109,9 @@ function saveMap(){
 }
 
 function loadMap(){
+  /**
+   * ノート設定をlocalStorageから読み込む
+   */
   let data = JSON.parse(localStorage.getItem(SETTING_SAVETONES));
   if(data){
     scales.forEach((n) => {
@@ -110,6 +128,9 @@ function loadMap(){
 }
 
 document.getElementById("playpause").addEventListener("click", (e) => {
+  /**
+   * 再生・停止ボタン
+   */
   if(playState){
     playState = false;
     rhythm = 0;
