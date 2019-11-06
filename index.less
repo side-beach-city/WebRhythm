@@ -8,20 +8,20 @@ body{
 
 #playview{
   border: 1px solid @text;
-  width: 80%;
-  height: ~"calc(100vh - 64px)";
-  margin: auto;
+  width: ~"calc(100% - 64px)";
+  height: 100vh;
+  margin-left: 64px;
   display: table;
   border-collapse: collapse;
   .row{
     display: table-row;
     &::before{
-    content: attr(id);
-    margin-left: 8px;
-    font-size: 180%;
-    opacity: 0.3;
-    display: block; 
-    position: absolute;
+      content: attr(id);
+      margin-left: 8px;
+      font-size: 180%;
+      opacity: 0.3;
+      display: block; 
+      position: absolute;
     }
     .cell{
       display: table-cell;
@@ -40,8 +40,14 @@ body{
   }
 }
 
-// footer
+// controller
 
-#toolbar{
-  margin: 12px 24px;
+#controller{
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 64px;
+  border: 1px solid @text;
+  padding: 8px;
 }

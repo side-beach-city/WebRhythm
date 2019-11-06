@@ -2,9 +2,10 @@ const notes = 8;
 const scales = "cdefgabC".split("");
 const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
 const SETTING_SAVETONES = "Display_Notes";
-let rhythm = 0;
+let rhythm = -1;
 let audioCtx;
 let timing = 500;
+let playState = true;
 // https://qiita.com/mohayonao/items/c506f7ddcaac63694eb9
 function mtof(midi) {
   return 440 * Math.pow(2, (midi - 69) / 12);
@@ -18,21 +19,21 @@ function init(){
   scalesN.forEach((n) => {
     let row = document.createElement("div");
     if(n != "N"){
-    row.id = n;
+      row.id = n;
     }
     row.classList.add("row");
     [...Array(notes).keys()].forEach((i) => {
-    cell = document.createElement("div");
-    cell.id = `n${n}${i}`;
-    cell.classList.add("cell");
-    if(n != "N"){
-      cell.addEventListener("click", noteToggle);
-    }
-    row.appendChild(cell);
+      cell = document.createElement("div");
+      cell.id = `n${n}${i}`;
+      cell.classList.add("cell");
+      if(n != "N"){
+        cell.addEventListener("click", noteToggle);
+      }
+      row.appendChild(cell);
     });
     playview.appendChild(row);
   });
-  setTimeout(tick, timing);
+  tick();
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   loadMap();
@@ -44,19 +45,26 @@ function noteToggle(){
 }
 
 function tick(){
-  let last = document.getElementById(`nN${rhythm}`);
-  rhythm = rhythm < notes - 1 ? rhythm + 1 : 0
-  let now = document.getElementById(`nN${rhythm}`);
-  last.classList.remove("note");
-  now.classList.add("note");
-  // note
-  scales.forEach((n, i) => {
-    let note = document.getElementById(`n${n}${rhythm}`);
-    if(note.classList.contains("on")){
-      play(mtof(scaleNotes[i]));
+  if(playState){
+    let last = null;
+    if(last >= 0){
+      last = document.getElementById(`nN${rhythm}`);
     }
-  });
-  setTimeout(tick, timing);
+    rhythm = rhythm < notes - 1 ? rhythm + 1 : 0
+    let now = document.getElementById(`nN${rhythm}`);
+    if(last){
+      last.classList.remove("note");
+    }
+    now.classList.add("note");
+    // note
+    scales.forEach((n, i) => {
+      let note = document.getElementById(`n${n}${rhythm}`);
+      if(note.classList.contains("on")){
+        play(mtof(scaleNotes[i]));
+      }
+    });
+    setTimeout(tick, timing);
+    }
 }
 
 function play(hz) {
@@ -76,8 +84,8 @@ function saveMap(){
   let data = {}
   scales.forEach((n) => {
     let r = [...Array(notes).keys()].filter((i) => {
-    let cell = document.getElementById(`n${n}${i}`);
-    return cell.classList.contains("on");
+      let cell = document.getElementById(`n${n}${i}`);
+      return cell.classList.contains("on");
     });
     data[n] = r;
   });
@@ -89,16 +97,32 @@ function loadMap(){
   let data = JSON.parse(localStorage.getItem(SETTING_SAVETONES));
   if(data){
     scales.forEach((n) => {
-    if(data[n]){
-      [...Array(notes).keys()].forEach((i) => {
-      let cell = document.getElementById(`n${n}${i}`);
-      if(data[n].indexOf(i) >= 0){
-        cell.classList.add("on");
+      if(data[n]){
+        [...Array(notes).keys()].forEach((i) => {
+          let cell = document.getElementById(`n${n}${i}`);
+          if(data[n].indexOf(i) >= 0){
+            cell.classList.add("on");
+          }
+        });
       }
-      });
-    }
     });
   }
 }
+
+document.getElementById("playpause").addEventListener("click", (e) => {
+  if(playState){
+    playState = false;
+    rhythm = 0;
+    e.target.textContent = "▶";
+    Array.from(document.getElementsByClassName("note")).forEach((n) => {
+      n.classList.remove("note");
+    });
+  }else{
+    playState = true;
+    rhythm = 0;
+    e.target.textContent = "■";
+    tick();
+  }
+});
 
 init();
