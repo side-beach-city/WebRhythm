@@ -2,6 +2,7 @@ const notes = 8;
 const scales = "cdefgabC".split("");
 const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
 const SETTING_SAVETONES = "Display_Notes";
+const SETTING_SAVESPEED = "WAA_Demo_Speed";
 let rhythm = -1;
 let audioCtx;
 let timing = 500;
@@ -30,7 +31,10 @@ function init(){
       cell.id = `n${n}${i}`;
       cell.classList.add("cell");
       if(n != "N"){
-        cell.addEventListener("click", noteToggle);
+        cell.addEventListener("click", (e) => {
+          e.target.classList.toggle("on");
+          saveMap();
+        });
       }
       row.appendChild(cell);
     });
@@ -40,11 +44,6 @@ function init(){
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   loadMap();
-}
-
-function noteToggle(){
-  this.classList.toggle("on");
-  saveMap();
 }
 
 function tick(){
