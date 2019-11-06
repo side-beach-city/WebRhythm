@@ -11,10 +11,14 @@
 <body>
   <div id="playview">
   </div>
-  <div id="controller">
+  <div id="controller" class="form-group">
     <button id="playpause" class="btn btn-primary">■</button>
+    <div id="speed_block">
+      <label id="speed_value" for="speed"></label>
+      <input id="speed" class="form-control-range" type="range" value="500" min="0" max="1000" step="100"/>
+    </div>
   </div>
-  <script src="https://cdn.honokak.osaka/honoka/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.honokak.osaka/honoka/4.3.1/js/bootstrap.min.js"></script>
   <script src="index.js"></script>
 </body>
 </html>

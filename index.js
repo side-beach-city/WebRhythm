@@ -41,6 +41,13 @@ function init(){
     playview.appendChild(row);
   });
   tick();
+  let v = localStorage.getItem(SETTING_SAVESPEED);
+  if(v == undefined){
+    v = 500;
+  }else{
+    v = parseInt(v);
+  }
+  update_speed(v);
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   loadMap();
@@ -72,6 +79,24 @@ function tick(){
     });
     setTimeout(tick, timing);
     }
+}
+
+function update_speed(value){
+  /**
+   * タイミング値のアップデート処理
+   * value...設定時は、タイミング値を更新する。未設定時はスライダーの値を反映する。
+   */
+  let slider = document.getElementById("speed");
+  let label = document.getElementById("speed_value");
+
+  if(typeof value == 'number'){
+    slider.value = value;
+  }else{
+    localStorage.setItem(SETTING_SAVESPEED, slider.value);
+  }
+  trueValue = slider.value > 0 ? slider.value : 50;
+  timing = trueValue;
+  label.textContent = trueValue;
 }
 
 function play(hz) {
@@ -144,5 +169,7 @@ document.getElementById("playpause").addEventListener("click", (e) => {
     tick();
   }
 });
+
+document.getElementById("speed").addEventListener("input", update_speed);
 
 init();

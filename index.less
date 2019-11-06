@@ -8,9 +8,8 @@ body{
 
 #playview{
   border: 1px solid @text;
-  width: ~"calc(100% - 64px)";
-  height: 100vh;
-  margin-left: 64px;
+  width: 100%;
+  height: calc(100vh - 64px);
   display: table;
   border-collapse: collapse;
   .row{
@@ -40,14 +39,29 @@ body{
   }
 }
 
-// controller
-
 #controller{
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
-  width: 64px;
+  width: 100%;
   border: 1px solid @text;
   padding: 8px;
+  button, div{
+    float: left;
+    margin: 4px;
+    > #speed_value{
+      font-size: 10px;
+      position: relative;
+      width: 100px;
+      display: block;
+      text-align: center;
+      margin: 0;
+      &::before{
+        content: "Speed:"
+      }
+    }
+    > #speed{
+      width: 100px;
+      height: 24px;
+    }
+  }
 }
