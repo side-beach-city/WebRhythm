@@ -1,7 +1,7 @@
 const notes = 8;
 const scales = "cdefgabC".split("");
 const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
-const SETTING_NAMEROOT = "Display_"
+const SETTING_NAMEROOT = "Display_";
 const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
 let rhythm = -1;
