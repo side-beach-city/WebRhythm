@@ -1,3 +1,4 @@
+import {ScoreMap} from './scoremap.js';
 const notes = 8;
 const scales = "cdefgabC".split("");
 const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
@@ -6,6 +7,7 @@ const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
 let rhythm = -1;
 let audioCtx;
+let scoremap;
 let timing = 500;
 let playState = true;
 // https://qiita.com/mohayonao/items/c506f7ddcaac63694eb9
@@ -34,7 +36,9 @@ function init(){
       if(n != "N"){
         cell.addEventListener("click", (e) => {
           e.target.classList.toggle("on");
-          saveMap();
+          let scale = e.target.id[1];
+          let position = parseInt(e.target.id[2]);
+          scoremap.setNotes(scale, position).saveMap(SETTING_SAVETONES);
         });
       }
       row.appendChild(cell);
@@ -51,6 +55,7 @@ function init(){
   update_speed(v);
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  scoremap = new ScoreMap();
   loadMap();
 }
 
@@ -117,27 +122,11 @@ function play(hz) {
   }, timing * 0.9);
 }
 
-function saveMap(){
-  /**
-   * ノート設定をlocalStorageに保存する
-   */
-  let data = {}
-  scales.forEach((n) => {
-    let r = [...Array(notes).keys()].filter((i) => {
-      let cell = document.getElementById(`n${n}${i}`);
-      return cell.classList.contains("on");
-    });
-    data[n] = r;
-  });
-  localStorage.setItem(SETTING_SAVETONES, JSON.stringify(data));
-  return data;
-}
-
 function loadMap(){
   /**
    * ノート設定をlocalStorageから読み込む
    */
-  let data = JSON.parse(localStorage.getItem(SETTING_SAVETONES));
+  let data = scoremap.loadMap(SETTING_SAVETONES);
   if(data){
     scales.forEach((n) => {
       if(data[n]){
@@ -172,5 +161,6 @@ document.getElementById("playpause").addEventListener("click", (e) => {
 });
 
 document.getElementById("speed").addEventListener("input", update_speed);
+
 
 init();
