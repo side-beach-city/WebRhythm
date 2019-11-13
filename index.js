@@ -28,7 +28,7 @@ function init(){
     }
     row.classList.add("row");
     [...Array(notes).keys()].forEach((i) => {
-      cell = document.createElement("div");
+      let cell = document.createElement("div");
       cell.id = `n${n}${i}`;
       cell.classList.add("cell");
       if(n != "N"){
@@ -95,7 +95,7 @@ function update_speed(value){
   }else{
     localStorage.setItem(SETTING_SAVESPEED, slider.value);
   }
-  trueValue = slider.value > 0 ? slider.value : 50;
+  let trueValue = slider.value > 0 ? slider.value : 50;
   timing = trueValue;
   label.textContent = trueValue;
 }
