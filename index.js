@@ -6,6 +6,7 @@ const SETTING_NAMEROOT = "Display_";
 const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
 let rhythm = -1;
+let tickID;
 let audioCtx;
 let scoremap;
 let timing = 500;
@@ -84,7 +85,7 @@ function tick(){
         play(mtof(scaleNotes[i]));
       }
     });
-    setTimeout(tick, timing);
+    tickID = setTimeout(tick, timing);
     }
 }
 
@@ -123,26 +124,71 @@ function play(hz) {
   }, timing * 0.9);
 }
 
+/**
+ * 音楽の再生をただちに開始する
+ */
+function playerPlay() {
+  playState = true;
+  rhythm = 0;
+  document.getElementById("playpause").textContent = "■";
+  tick();
+}
+
+/**
+ * 音楽の再生をただちに停止する
+ */
+function playerStop() {
+  playState = false;
+  rhythm = 0;
+  document.getElementById("playpause").textContent = "▶";
+  if(tickID) clearTimeout(tickID);
+  Array.from(document.getElementsByClassName("note")).forEach((n) => {
+    n.classList.remove("note");
+  });
+}
+
+/**
+ * 音楽の再生を停止し・再開する
+ */
+function playerRestart() {
+  playerStop();
+  playerPlay();
+}
+
 document.getElementById("playpause").addEventListener("click", (e) => {
   /**
    * 再生・停止ボタン
    */
   if(playState){
-    playState = false;
-    rhythm = 0;
-    e.target.textContent = "▶";
-    Array.from(document.getElementsByClassName("note")).forEach((n) => {
-      n.classList.remove("note");
-    });
+    playerStop();
   }else{
-    playState = true;
-    rhythm = 0;
-    e.target.textContent = "■";
-    tick();
+    playerPlay();
   }
 });
 
 document.getElementById("speed").addEventListener("input", update_speed);
+
+/**
+ * 前のページボタン。前のページを表示する
+ */
+document.getElementById("pagination_prev").addEventListener("click", () => {
+  if(scoremap.pageIndex >= 0){
+    scoremap.switchPage(scoremap.pageIndex - 1);
+    playerRestart();
+  }
+});
+
+/**
+ * 次のページボタン。次のページを表示するか、なければ新しいページを作る
+ */
+document.getElementById("pagination_next").addEventListener("click", () => {
+  if(scoremap.pageIndex < scoremap.pageLength - 1){
+    scoremap.switchPage(scoremap.pageIndex + 1);
+  }else{
+    scoremap.addNewPage(true);
+  }
+  playerRestart();
+});
 
 function noteReflect(e){
   if(e.scale){

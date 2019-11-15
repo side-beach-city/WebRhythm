@@ -132,7 +132,7 @@ export class ScoreMap {
       "pages": []
     };
     this._pages.forEach((p) => {
-      data.pages.push(p);
+      data.pages.push(p.notes);
     });
     localStorage.setItem(saveSlotName, JSON.stringify(data));
     return this;
@@ -155,7 +155,7 @@ export class ScoreMap {
         "current": this._currentPageIndex + 1,
         "length": this._pages.length,
       });
-        this.switchPage(0);
+      this.switchPage(0);
     }else{
       this.formatScore();
     }
@@ -204,9 +204,13 @@ export class ScoreMap {
 
 class Page {
   constructor(notes) {
-    this.notes = notes ? notes : {};
-    scales.forEach((s) => {
-      this.notes[s] = Array(8).fill(false);
-    });
+    if(notes){
+      this.notes = notes;
+    }else{
+      this.notes = {};
+      scales.forEach((s) => {
+        this.notes[s] = Array(8).fill(false);
+      });
+    }
   }
 }
