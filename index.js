@@ -5,6 +5,7 @@ const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
 const SETTING_NAMEROOT = "Display_";
 const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
+const PAGE_MAX = 7;
 let rhythm = -1;
 let tickID;
 let audioCtx;
@@ -189,7 +190,7 @@ document.getElementById("pagination_prev").addEventListener("click", () => {
 document.getElementById("pagination_next").addEventListener("click", () => {
   if(scoremap.pageIndex < scoremap.pageLength - 1){
     scoremap.switchPage(scoremap.pageIndex + 1);
-  }else{
+  }else if(scoremap.pageLength < PAGE_MAX){
     scoremap.addNewPage(true);
   }
 });
@@ -271,7 +272,7 @@ function pageChanges(e) {
   }else{
     prev.classList.remove("disabled");
   }
-  if(e.current >= 255){ // nextの上限値はない予定
+  if(e.current >= PAGE_MAX){
     next.classList.add("disabled");
   }else{
     next.classList.remove("disabled");
