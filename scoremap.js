@@ -68,7 +68,14 @@ export class ScoreMap {
    * @param {Boolean} switchCurrent 作成後、そのページを表示する場合はtrue
    */
   addNewPage(switchCurrent){
-    this._pages.push(new Page());
+    let p = new Page();
+    p.statusChangeHandler = () => {
+      this.fireEvent({
+        "type": EVENTNAME_NOTES,
+        "notes": this.currentPage.notes,
+      });
+    };
+    this._pages.push(p);
     this.fireEvent({
       "type": EVENTNAME_CHANGEPAGE,
       "current": this._currentPageIndex + 1,
@@ -165,7 +172,14 @@ export class ScoreMap {
     if(data && data.pages){
       this._pages = [];
       data.pages.forEach((d) => {
-        this._pages.push(new Page(d));
+        let p = new Page(d);
+        p.statusChangeHandler = () => {
+          this.fireEvent({
+            "type": EVENTNAME_NOTES,
+            "notes": this.currentPage.notes,
+          });
+        };
+        this._pages.push(p);
       });
       this.fireEvent({
         "type": EVENTNAME_CHANGEPAGE,
@@ -220,14 +234,28 @@ export class ScoreMap {
 }
 
 class Page {
+
+  /**
+   * ページの状態が変化したときに呼び出されるハンドラ
+   */
+  statusChangeHandler = undefined;
+
   constructor(notes) {
     if(notes){
       this.notes = notes;
     }else{
       this.notes = {};
-      scales.forEach((s) => {
-        this.notes[s] = Array(8).fill(false);
-      });
+      this.clean();
     }
+  }
+
+  /**
+   * ページ内のノートをすべて削除する
+   */
+  clean() {
+    scales.forEach((s) => {
+      this.notes[s] = Array(8).fill(false);
+    });
+    if(this.statusChangeHandler) this.statusChangeHandler();
   }
 }

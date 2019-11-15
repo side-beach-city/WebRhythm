@@ -204,6 +204,14 @@ document.getElementById("pagination_del").addEventListener("click", () => {
   }
 });
 
+/**
+ * 現在のページノートをクリアするボタン。
+ */
+document.getElementById("clear").addEventListener("click", () => {
+  scoremap.currentPage.clean();
+  scoremap.saveMap(SETTING_SAVETONES);
+});
+
 function noteReflect(e){
   if(e.scale){
     // 音を指定して状態チェンジ
