@@ -28,7 +28,14 @@ export class ScoreMap {
      * @param {Boolean} state ノートオン状態であればtrue。省略した場合、今の値を反転する
      * @returns {ScoreMap} 自分自身
      */
-    this.currentPage.notes[scale][position] = state != undefined ? state : !this.getNotes(scale, position);
+    state = this.currentPage.notes[scale][position] = state != undefined ? state : !this.getNotes(scale, position);
+    this.fireEvent({
+      "type": "note",
+      "scale": scale,
+      "position": position,
+      "state": state,
+      "notes": this.currentPage.notes,
+    });
     return this;
   }
 
@@ -51,8 +58,51 @@ export class ScoreMap {
     let data = JSON.parse(localStorage.getItem(loadSlotName));
     if(data){
       this.currentPage.notes = data;
+      this.fireEvent({
+        "type": "note",
+        "notes": this.currentPage.notes,
+      });
     }
     return data;
+  }
+
+  // https://qiita.com/yama_mo/items/584584a009dfd518530c
+  addEventListener(type, listener) {
+    if(!this.hasOwnProperty("_listeners")){
+      this._listeners = [];
+    }
+    if(typeof this._listeners[type] == 'undefined'){
+      this._listeners[type] = [];
+    }
+
+    this._listeners[type].push(listener);
+  }
+
+  fireEvent(event) {
+    if(!event.target){
+      event.target = this;
+    }
+    if(!event.type){
+      throw new Error("Event object missing 'type' property.");
+    }
+    if(this._listeners && this._listeners[event.type] instanceof Array){
+      let listeners = this._listeners[event.type];
+      for(let i=0;i<listeners.length;i++){
+        listeners[i].call(this, event)
+      }
+    }
+  }
+
+  removeEventListener(type, listener) {
+    if(this._listeners && this._listeners[type] instanceof Array){
+      let listeners = this._listeners[type];
+      for(let i=0;i<listeners.length;i++){
+        if(listeners[i] === listeners){
+          listeners.splice(i,1);
+          break;
+        }
+      }
+    }
   }
 }
 

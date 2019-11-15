@@ -35,7 +35,6 @@ function init(){
       cell.classList.add("cell");
       if(n != "N"){
         cell.addEventListener("click", (e) => {
-          e.target.classList.toggle("on");
           let scale = e.target.id[1];
           let position = parseInt(e.target.id[2]);
           scoremap.setNotes(scale, position).saveMap(SETTING_SAVETONES);
@@ -56,7 +55,30 @@ function init(){
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   scoremap = new ScoreMap();
-  loadMap();
+  scoremap.addEventListener("note",(e) => {
+    if(e.scale){
+      // 音を指定して状態チェンジ
+      let cell = document.getElementById(`n${e.scale}${e.position}`);
+      if(e.state){
+        cell.classList.add("on");
+      }else{
+        cell.classList.remove("on");
+      }
+    }else{
+      // 音色総入れ替え
+      scales.forEach((n) => {
+        [...Array(notes).keys()].forEach((i) => {
+          let cell = document.getElementById(`n${n}${i}`);
+          if(e.notes[n][i]){
+            cell.classList.add("on");
+          }else{
+            cell.classList.remove("on");
+          }
+        });
+      });
+    }
+  });
+  scoremap.loadMap(SETTING_SAVETONES);
 }
 
 function tick(){
@@ -120,25 +142,6 @@ function play(hz) {
   setTimeout(function() {
     osciillator.stop();
   }, timing * 0.9);
-}
-
-function loadMap(){
-  /**
-   * ノート設定をlocalStorageから読み込む
-   */
-  let data = scoremap.loadMap(SETTING_SAVETONES);
-  if(data){
-    scales.forEach((n) => {
-      if(data[n]){
-        [...Array(notes).keys()].forEach((i) => {
-          let cell = document.getElementById(`n${n}${i}`);
-          if(data[n].indexOf(i) >= 0){
-            cell.classList.add("on");
-          }
-        });
-      }
-    });
-  }
 }
 
 document.getElementById("playpause").addEventListener("click", (e) => {
