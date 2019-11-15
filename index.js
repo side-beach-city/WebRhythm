@@ -232,7 +232,11 @@ function pageChanges(e) {
       a.href = "#"
       a.id = `paginate-a-${i}`;
       a.classList.add("link");
-      li.appendChild(a)
+      a.dataset.number = i;
+      a.addEventListener("click", (e) => {
+        scoremap.switchPage(parseInt(e.target.dataset.number));
+      });
+      li.appendChild(a);
       ul.insertBefore(li, next);
     });
   }
