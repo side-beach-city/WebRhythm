@@ -1,3 +1,4 @@
+const EVENTNAME_NOTES = "note";
 const scales = "cdefgabC".split("");
 export class ScoreMap {
   /**
@@ -30,7 +31,7 @@ export class ScoreMap {
      */
     state = this.currentPage.notes[scale][position] = state != undefined ? state : !this.getNotes(scale, position);
     this.fireEvent({
-      "type": "note",
+      "type": EVENTNAME_NOTES,
       "scale": scale,
       "position": position,
       "state": state,
@@ -67,7 +68,7 @@ export class ScoreMap {
   switchPage(pageIndex){
     this._currentPageIndex = pageIndex;
     this.fireEvent({
-      "type": "note",
+      "type": EVENTNAME_NOTES,
       "notes": this.currentPage.notes,
     });
   }
