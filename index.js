@@ -85,8 +85,15 @@ function tick(){
         play(mtof(scaleNotes[i]));
       }
     });
-    tickID = setTimeout(tick, timing);
-    }
+    nextTick();
+  }
+}
+
+/**
+ * 次のtick()タイムアウトを設定し、そのIDをtickIDに保存する
+ */
+function nextTick() {
+  tickID = setTimeout(tick, timing);
 }
 
 function update_speed(value){
@@ -129,9 +136,9 @@ function play(hz) {
  */
 function playerPlay() {
   playState = true;
-  rhythm = 0;
+  rhythm = -1;
   document.getElementById("playpause").textContent = "■";
-  tick();
+  nextTick();
 }
 
 /**
@@ -139,7 +146,6 @@ function playerPlay() {
  */
 function playerStop() {
   playState = false;
-  rhythm = 0;
   document.getElementById("playpause").textContent = "▶";
   if(tickID) clearTimeout(tickID);
   Array.from(document.getElementsByClassName("note")).forEach((n) => {
@@ -172,9 +178,8 @@ document.getElementById("speed").addEventListener("input", update_speed);
  * 前のページボタン。前のページを表示する
  */
 document.getElementById("pagination_prev").addEventListener("click", () => {
-  if(scoremap.pageIndex >= 0){
+  if(scoremap.pageIndex > 0){
     scoremap.switchPage(scoremap.pageIndex - 1);
-    playerRestart();
   }
 });
 
@@ -187,7 +192,6 @@ document.getElementById("pagination_next").addEventListener("click", () => {
   }else{
     scoremap.addNewPage(true);
   }
-  playerRestart();
 });
 
 /**
@@ -197,7 +201,6 @@ document.getElementById("pagination_del").addEventListener("click", () => {
   if(scoremap.pageLength > 1){
     scoremap.removePage(scoremap.pageIndex);
   }
-  playerRestart();
 });
 
 function noteReflect(e){
@@ -273,6 +276,7 @@ function pageChanges(e) {
   }else{
     next.classList.remove("disabled");
   }
+  playerRestart();
 }
 
 init();
