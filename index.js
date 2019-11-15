@@ -1,3 +1,4 @@
+import {ScoreMap} from './scoremap.js';
 const notes = 8;
 const scales = "cdefgabC".split("");
 const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
@@ -5,7 +6,9 @@ const SETTING_NAMEROOT = "Display_";
 const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
 let rhythm = -1;
+let tickID;
 let audioCtx;
+let scoremap;
 let timing = 500;
 let playState = true;
 // https://qiita.com/mohayonao/items/c506f7ddcaac63694eb9
@@ -28,13 +31,14 @@ function init(){
     }
     row.classList.add("row");
     [...Array(notes).keys()].forEach((i) => {
-      cell = document.createElement("div");
+      let cell = document.createElement("div");
       cell.id = `n${n}${i}`;
       cell.classList.add("cell");
       if(n != "N"){
         cell.addEventListener("click", (e) => {
-          e.target.classList.toggle("on");
-          saveMap();
+          let scale = e.target.id[1];
+          let position = parseInt(e.target.id[2]);
+          scoremap.setNotes(scale, position).saveMap(SETTING_SAVETONES);
         });
       }
       row.appendChild(cell);
@@ -51,7 +55,10 @@ function init(){
   update_speed(v);
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  loadMap();
+  scoremap = new ScoreMap();
+  scoremap.addEventListener("note", noteReflect);
+  scoremap.addEventListener("changepages", pageChanges);
+  scoremap.loadMap(SETTING_SAVETONES);
 }
 
 function tick(){
@@ -78,7 +85,7 @@ function tick(){
         play(mtof(scaleNotes[i]));
       }
     });
-    setTimeout(tick, timing);
+    tickID = setTimeout(tick, timing);
     }
 }
 
@@ -95,7 +102,7 @@ function update_speed(value){
   }else{
     localStorage.setItem(SETTING_SAVESPEED, slider.value);
   }
-  trueValue = slider.value > 0 ? slider.value : 50;
+  let trueValue = slider.value > 0 ? slider.value : 50;
   timing = trueValue;
   label.textContent = trueValue;
 }
@@ -117,39 +124,35 @@ function play(hz) {
   }, timing * 0.9);
 }
 
-function saveMap(){
-  /**
-   * ノート設定をlocalStorageに保存する
-   */
-  let data = {}
-  scales.forEach((n) => {
-    let r = [...Array(notes).keys()].filter((i) => {
-      let cell = document.getElementById(`n${n}${i}`);
-      return cell.classList.contains("on");
-    });
-    data[n] = r;
-  });
-  localStorage.setItem(SETTING_SAVETONES, JSON.stringify(data));
-  return data;
+/**
+ * 音楽の再生をただちに開始する
+ */
+function playerPlay() {
+  playState = true;
+  rhythm = 0;
+  document.getElementById("playpause").textContent = "■";
+  tick();
 }
 
-function loadMap(){
-  /**
-   * ノート設定をlocalStorageから読み込む
-   */
-  let data = JSON.parse(localStorage.getItem(SETTING_SAVETONES));
-  if(data){
-    scales.forEach((n) => {
-      if(data[n]){
-        [...Array(notes).keys()].forEach((i) => {
-          let cell = document.getElementById(`n${n}${i}`);
-          if(data[n].indexOf(i) >= 0){
-            cell.classList.add("on");
-          }
-        });
-      }
-    });
-  }
+/**
+ * 音楽の再生をただちに停止する
+ */
+function playerStop() {
+  playState = false;
+  rhythm = 0;
+  document.getElementById("playpause").textContent = "▶";
+  if(tickID) clearTimeout(tickID);
+  Array.from(document.getElementsByClassName("note")).forEach((n) => {
+    n.classList.remove("note");
+  });
+}
+
+/**
+ * 音楽の再生を停止し・再開する
+ */
+function playerRestart() {
+  playerStop();
+  playerPlay();
 }
 
 document.getElementById("playpause").addEventListener("click", (e) => {
@@ -157,20 +160,119 @@ document.getElementById("playpause").addEventListener("click", (e) => {
    * 再生・停止ボタン
    */
   if(playState){
-    playState = false;
-    rhythm = 0;
-    e.target.textContent = "▶";
-    Array.from(document.getElementsByClassName("note")).forEach((n) => {
-      n.classList.remove("note");
-    });
+    playerStop();
   }else{
-    playState = true;
-    rhythm = 0;
-    e.target.textContent = "■";
-    tick();
+    playerPlay();
   }
 });
 
 document.getElementById("speed").addEventListener("input", update_speed);
+
+/**
+ * 前のページボタン。前のページを表示する
+ */
+document.getElementById("pagination_prev").addEventListener("click", () => {
+  if(scoremap.pageIndex >= 0){
+    scoremap.switchPage(scoremap.pageIndex - 1);
+    playerRestart();
+  }
+});
+
+/**
+ * 次のページボタン。次のページを表示するか、なければ新しいページを作る
+ */
+document.getElementById("pagination_next").addEventListener("click", () => {
+  if(scoremap.pageIndex < scoremap.pageLength - 1){
+    scoremap.switchPage(scoremap.pageIndex + 1);
+  }else{
+    scoremap.addNewPage(true);
+  }
+  playerRestart();
+});
+
+/**
+ * ページ削除ボタン。ページを削除する
+ */
+document.getElementById("pagination_del").addEventListener("click", () => {
+  if(scoremap.pageLength > 1){
+    scoremap.removePage(scoremap.pageIndex);
+  }
+  playerRestart();
+});
+
+function noteReflect(e){
+  if(e.scale){
+    // 音を指定して状態チェンジ
+    let cell = document.getElementById(`n${e.scale}${e.position}`);
+    if(e.state){
+      cell.classList.add("on");
+    }else{
+      cell.classList.remove("on");
+    }
+  }else{
+    // 音色総入れ替え
+    scales.forEach((n) => {
+      [...Array(notes).keys()].forEach((i) => {
+        let cell = document.getElementById(`n${n}${i}`);
+        if(e.notes[n][i]){
+          cell.classList.add("on");
+        }else{
+          cell.classList.remove("on");
+        }
+      });
+    });
+  }
+}
+
+function pageChanges(e) {
+  let ul = document.getElementById("pagination");
+  let items = ul.querySelectorAll("li.cont");
+  let prev = items[0];
+  let next = items[1];
+  let del = items[2];
+  if(e.length){
+    // ページ数変更
+    Array.from(ul.querySelectorAll(".item")).forEach((e) => {
+      e.remove();
+    });
+    [...Array(e.length).keys()].forEach((i) => {
+      let li = document.createElement("li");
+      let a = document.createElement("a");
+      li.id = `paginate-${i}`;
+      li.classList.add("item");
+      a.href = "#"
+      a.id = `paginate-a-${i}`;
+      a.classList.add("link");
+      a.dataset.number = i;
+      a.addEventListener("click", (e) => {
+        scoremap.switchPage(parseInt(e.target.dataset.number));
+      });
+      li.appendChild(a);
+      ul.insertBefore(li, next);
+    });
+    if(e.length > 1){
+      del.classList.remove("disabled");
+    }else{
+      del.classList.add("disabled");
+    }
+    scoremap.saveMap(SETTING_SAVETONES);
+  }
+  if(e.past){
+    let past = document.getElementById(`paginate-a-${e.past-1}`);
+    if(past){ past.classList.remove("on"); }
+  }
+  document.getElementById(`paginate-a-${e.current-1}`).classList.add("on");
+  // prev / nextの状態変更
+  if(e.current <= 1){
+    prev.classList.add("disabled");
+  }else{
+    prev.classList.remove("disabled");
+  }
+  if(e.current >= 255){ // nextの上限値はない予定
+    next.classList.add("disabled");
+  }else{
+    next.classList.remove("disabled");
+  }
+}
 
 init();
