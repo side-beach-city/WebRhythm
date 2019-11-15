@@ -190,6 +190,16 @@ document.getElementById("pagination_next").addEventListener("click", () => {
   playerRestart();
 });
 
+/**
+ * ページ削除ボタン。ページを削除する
+ */
+document.getElementById("pagination_del").addEventListener("click", () => {
+  if(scoremap.pageLength > 1){
+    scoremap.removePage(scoremap.pageIndex);
+  }
+  playerRestart();
+});
+
 function noteReflect(e){
   if(e.scale){
     // 音を指定して状態チェンジ
@@ -219,6 +229,7 @@ function pageChanges(e) {
   let items = ul.querySelectorAll("li.cont");
   let prev = items[0];
   let next = items[1];
+  let del = items[2];
   if(e.length){
     // ページ数変更
     Array.from(ul.querySelectorAll(".item")).forEach((e) => {
@@ -239,6 +250,12 @@ function pageChanges(e) {
       li.appendChild(a);
       ul.insertBefore(li, next);
     });
+    if(e.length > 1){
+      del.classList.remove("disabled");
+    }else{
+      del.classList.add("disabled");
+    }
+    scoremap.saveMap(SETTING_SAVETONES);
   }
   if(e.past){
     let past = document.getElementById(`paginate-a-${e.past-1}`);

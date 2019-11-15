@@ -80,6 +80,23 @@ export class ScoreMap {
   }
 
   /**
+   * ページを削除する
+   * @param {Number} pageIndex 削除するページ
+   */
+  removePage(pageIndex){
+    if(this._currentPageIndex == pageIndex && this._currentPageIndex > 0){
+      this._currentPageIndex = pageIndex - 1;
+    }
+    this._pages.splice(pageIndex, 1);
+    this.fireEvent({
+      "type": EVENTNAME_CHANGEPAGE,
+      "current": this._currentPageIndex + 1,
+      "length": this._pages.length,
+    });
+    this.switchPage(this._currentPageIndex);
+  }
+
+  /**
    * ページを切り替える。
    * 現在のページを再読み込みする場合は、表示中のページインデックスを指定してこのメソッドを呼び出すこと。
    * @param {Number} pageIndex 新しいページのインデックス
