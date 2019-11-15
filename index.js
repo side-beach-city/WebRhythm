@@ -55,29 +55,7 @@ function init(){
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   scoremap = new ScoreMap();
-  scoremap.addEventListener("note",(e) => {
-    if(e.scale){
-      // 音を指定して状態チェンジ
-      let cell = document.getElementById(`n${e.scale}${e.position}`);
-      if(e.state){
-        cell.classList.add("on");
-      }else{
-        cell.classList.remove("on");
-      }
-    }else{
-      // 音色総入れ替え
-      scales.forEach((n) => {
-        [...Array(notes).keys()].forEach((i) => {
-          let cell = document.getElementById(`n${n}${i}`);
-          if(e.notes[n][i]){
-            cell.classList.add("on");
-          }else{
-            cell.classList.remove("on");
-          }
-        });
-      });
-    }
-  });
+  scoremap.addEventListener("note", noteReflect);
   scoremap.loadMap(SETTING_SAVETONES);
 }
 
@@ -165,5 +143,28 @@ document.getElementById("playpause").addEventListener("click", (e) => {
 
 document.getElementById("speed").addEventListener("input", update_speed);
 
+function noteReflect(e){
+  if(e.scale){
+    // 音を指定して状態チェンジ
+    let cell = document.getElementById(`n${e.scale}${e.position}`);
+    if(e.state){
+      cell.classList.add("on");
+    }else{
+      cell.classList.remove("on");
+    }
+  }else{
+    // 音色総入れ替え
+    scales.forEach((n) => {
+      [...Array(notes).keys()].forEach((i) => {
+        let cell = document.getElementById(`n${n}${i}`);
+        if(e.notes[n][i]){
+          cell.classList.add("on");
+        }else{
+          cell.classList.remove("on");
+        }
+      });
+    });
+  }
+}
 
 init();
