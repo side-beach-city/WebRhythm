@@ -7,7 +7,7 @@ export class ScoreMap {
     /**
      * 初期化
      */
-    this.currentPage = new Page();
+    this.formatScore();
   }
 
   getNotes(scale, position){
@@ -39,13 +39,68 @@ export class ScoreMap {
     return this;
   }
 
+  /**
+   * スコアマップを初期化する
+   */
+  formatScore(){
+    this._pages = [];
+    this._currentPageIndex = 0;
+    this.addNewPage(true);
+  }
+
+  /**
+   * 新しいページを作成する
+   * @param {Boolean} switchCurrent 作成後、そのページを表示する場合はtrue
+   */
+  addNewPage(switchCurrent){
+    this._pages.push(new Page());
+    if (switchCurrent) {
+      this.switchPage(this._pages.length - 1);
+    }
+  }
+
+  /**
+   * ページを切り替える。
+   * 現在のページを再読み込みする場合は、表示中のページインデックスを指定してこのメソッドを呼び出すこと。
+   * @param {Number} pageIndex 新しいページのインデックス
+   */
+  switchPage(pageIndex){
+    this._currentPageIndex = pageIndex;
+    this.fireEvent({
+      "type": "note",
+      "notes": this.currentPage.notes,
+    });
+  }
+
+  /**
+   * 現在開いているページのインデックスを取得する
+   * @returns {Number} ページインデックス
+   */
+  get pageIndex(){
+    return this._currentPageIndex;
+  }
+
+  /**
+   * 現在開いているページを取得する
+   * @returns {Page} ページオブジェクト
+   */
+  get currentPage(){
+    return this._pages[this._currentPageIndex];
+  }
+
   saveMap(saveSlotName){
     /**
      * ノート設定をlocalStorageに保存する
      * @param {String} saveSlotName 保存する際の名称
      * @returns {ScoreMap} 自分自身
      */
-    localStorage.setItem(saveSlotName, JSON.stringify(this.currentPage.notes));
+    let data = {
+      "pages": []
+    };
+    this._pages.forEach((p) => {
+      data.pages.push(p);
+    });
+    localStorage.setItem(saveSlotName, JSON.stringify(data));
     return this;
   }
 
@@ -56,12 +111,14 @@ export class ScoreMap {
      * @returns {Array} 読み込んだデータを示す配列
      */
     let data = JSON.parse(localStorage.getItem(loadSlotName));
-    if(data){
-      this.currentPage.notes = data;
-      this.fireEvent({
-        "type": "note",
-        "notes": this.currentPage.notes,
+    if(data && data.pages){
+      this._pages = [];
+      data.pages.forEach((d) => {
+        this._pages.push(new Page(d));
       });
+      this.switchPage(0);
+    }else{
+      this.formatScore();
     }
     return data;
   }
@@ -108,7 +165,7 @@ export class ScoreMap {
 
 class Page {
   constructor(notes) {
-    this.notes = {}
+    this.notes = notes ? notes : {};
     scales.forEach((s) => {
       this.notes[s] = Array(8).fill(false);
     });
