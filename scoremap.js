@@ -1,3 +1,10 @@
+/**
+ * ノートの状態変更を示すイベントハンドラ。ページの読み込み時にも発生する。
+ * @param {String} scale 音色を示す文字。cdefgabCのいずれか。ページの全体的な変更の際はundefinedとなる。
+ * @param {Number} position 音の位置を示すインデックス。ページの全体的な変更の際はundefinedとなる。
+ * @param {Boolean} state 音がオンになったのか、オフになったのかを示す値。ページの全体的な変更の際はundefinedとなる。
+ * @param {notes} Array 現在のページのノートリスト。
+ */
 const EVENTNAME_NOTES = "note";
 const scales = "cdefgabC".split("");
 export class ScoreMap {
