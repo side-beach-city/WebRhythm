@@ -1,4 +1,11 @@
 /**
+ * ページの状態変更を示すイベントハンドラ。ページの切り替えなどのタイミングで発生する。
+ * @param {Number} oldValue 直前に開いていたページのページ番号(1オリジン)。switchPage()以外のタイミングで呼ばれた際はundefined。
+ * @param {Number} current 現在開いているページのページ番号(1オリジン)。
+ * @param {Number} length ページの最大数。addNewPage()以外のタイミングで呼ばれた際はundefined。
+ */
+const EVENTNAME_CHANGEPAGE = "changepages"
+/**
  * ノートの状態変更を示すイベントハンドラ。ページの読み込み時にも発生する。
  * @param {String} scale 音色を示す文字。cdefgabCのいずれか。ページの全体的な変更の際はundefinedとなる。
  * @param {Number} position 音の位置を示すインデックス。ページの全体的な変更の際はundefinedとなる。
@@ -62,6 +69,11 @@ export class ScoreMap {
    */
   addNewPage(switchCurrent){
     this._pages.push(new Page());
+    this.fireEvent({
+      "type": EVENTNAME_CHANGEPAGE,
+      "current": this._currentPageIndex + 1,
+      "length": this._pages.length,
+    });
     if (switchCurrent) {
       this.switchPage(this._pages.length - 1);
     }
@@ -73,11 +85,17 @@ export class ScoreMap {
    * @param {Number} pageIndex 新しいページのインデックス
    */
   switchPage(pageIndex){
+    let oldValue = this._currentPageIndex;
     this._currentPageIndex = pageIndex;
     this.fireEvent({
       "type": EVENTNAME_NOTES,
       "notes": this.currentPage.notes,
     });
+    this.fireEvent({
+      "type": EVENTNAME_CHANGEPAGE,
+      "past": oldValue + 1,
+      "current": this._currentPageIndex + 1
+    })
   }
 
   /**
@@ -94,6 +112,14 @@ export class ScoreMap {
    */
   get currentPage(){
     return this._pages[this._currentPageIndex];
+  }
+
+  /**
+   * スコア上のページ数を取得する
+   * @returns {Number} ページ数
+   */
+  get pageLength(){
+    return this._pages.length;
   }
 
   saveMap(saveSlotName){
@@ -124,7 +150,12 @@ export class ScoreMap {
       data.pages.forEach((d) => {
         this._pages.push(new Page(d));
       });
-      this.switchPage(0);
+      this.fireEvent({
+        "type": EVENTNAME_CHANGEPAGE,
+        "current": this._currentPageIndex + 1,
+        "length": this._pages.length,
+      });
+        this.switchPage(0);
     }else{
       this.formatScore();
     }

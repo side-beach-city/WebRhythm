@@ -56,6 +56,7 @@ function init(){
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   scoremap = new ScoreMap();
   scoremap.addEventListener("note", noteReflect);
+  scoremap.addEventListener("changepages", pageChanges);
   scoremap.loadMap(SETTING_SAVETONES);
 }
 
@@ -164,6 +165,46 @@ function noteReflect(e){
         }
       });
     });
+  }
+}
+
+function pageChanges(e) {
+  let ul = document.getElementById("pagination");
+  let items = ul.querySelectorAll("li.cont");
+  let prev = items[0];
+  let next = items[1];
+  if(e.length){
+    // ページ数変更
+    Array.from(ul.querySelectorAll(".item")).forEach((e) => {
+      e.remove();
+    });
+    [...Array(e.length).keys()].forEach((i) => {
+      let li = document.createElement("li");
+      let a = document.createElement("a");
+      li.id = `paginate-${i}`;
+      li.classList.add("item");
+      a.href = "#"
+      a.id = `paginate-a-${i}`;
+      a.classList.add("link");
+      li.appendChild(a)
+      ul.insertBefore(li, next);
+    });
+  }
+  if(e.past){
+    let past = document.getElementById(`paginate-a-${e.past-1}`);
+    if(past){ past.classList.remove("on"); }
+  }
+  document.getElementById(`paginate-a-${e.current-1}`).classList.add("on");
+  // prev / nextの状態変更
+  if(e.current <= 1){
+    prev.classList.add("disabled");
+  }else{
+    prev.classList.remove("disabled");
+  }
+  if(e.current >= 255){ // nextの上限値はない予定
+    next.classList.add("disabled");
+  }else{
+    next.classList.remove("disabled");
   }
 }
 
