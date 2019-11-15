@@ -14,35 +14,35 @@ const EVENTNAME_CHANGEPAGE = "changepages"
  */
 const EVENTNAME_NOTES = "note";
 const scales = "cdefgabC".split("");
+/**
+ * スコアを管理するクラス
+ */
 export class ScoreMap {
   /**
-   * スコアを管理するクラス
+   * 初期化
    */
   constructor() {
-    /**
-     * 初期化
-     */
     this.formatScore();
   }
 
+  /**
+   * ノートの状態を取得する
+   * @param {String} scale 音階を示す記号(cdefgabC)
+   * @param {Number} position 音の位置を示す数値(0-7)
+   * @return {Boolean} ノートオン状態であればtrue
+   */
   getNotes(scale, position){
-    /**
-     * ノートの状態を取得する
-     * @param {String} scale 音階を示す記号(cdefgabC)
-     * @param {Number} position 音の位置を示す数値(0-7)
-     * @return {Boolean} ノートオン状態であればtrue
-     */
     return this.currentPage.notes[scale][position];
   }
 
+  /**
+   * ノートの状態を設定する
+   * @param {String} scale 音階を示す記号(cdefgabC)
+   * @param {Number} position 音の位置を示す数値(0-7)
+   * @param {Boolean} state ノートオン状態であればtrue。省略した場合、今の値を反転する
+   * @returns {ScoreMap} 自分自身
+   */
   setNotes(scale, position, state){
-    /**
-     * ノートの状態を設定する
-     * @param {String} scale 音階を示す記号(cdefgabC)
-     * @param {Number} position 音の位置を示す数値(0-7)
-     * @param {Boolean} state ノートオン状態であればtrue。省略した場合、今の値を反転する
-     * @returns {ScoreMap} 自分自身
-     */
     state = this.currentPage.notes[scale][position] = state != undefined ? state : !this.getNotes(scale, position);
     this.fireEvent({
       "type": EVENTNAME_NOTES,
@@ -146,12 +146,12 @@ export class ScoreMap {
     return this._pages.length;
   }
 
+  /**
+   * ノート設定をlocalStorageに保存する
+   * @param {String} saveSlotName 保存する際の名称
+   * @returns {ScoreMap} 自分自身
+   */
   saveMap(saveSlotName){
-    /**
-     * ノート設定をlocalStorageに保存する
-     * @param {String} saveSlotName 保存する際の名称
-     * @returns {ScoreMap} 自分自身
-     */
     let data = {
       "pages": []
     };
@@ -162,12 +162,12 @@ export class ScoreMap {
     return this;
   }
 
+  /**
+   * ノート設定をlocalStorageから読み込む
+   * @param {String} saveSlotName 読み込む際の名称
+   * @returns {Array} 読み込んだデータを示す配列
+   */
   loadMap(loadSlotName){
-    /**
-     * ノート設定をlocalStorageから読み込む
-     * @param {String} saveSlotName 読み込む際の名称
-     * @returns {Array} 読み込んだデータを示す配列
-     */
     let data = JSON.parse(localStorage.getItem(loadSlotName));
     if(data && data.pages){
       this._pages = [];
@@ -194,6 +194,11 @@ export class ScoreMap {
   }
 
   // https://qiita.com/yama_mo/items/584584a009dfd518530c
+  /**
+   * イベントリスナーを追加する
+   * @param {String} type イベントタイプ
+   * @param {Code} listener イベントリスナー
+   */
   addEventListener(type, listener) {
     if(!this.hasOwnProperty("_listeners")){
       this._listeners = [];
@@ -205,6 +210,10 @@ export class ScoreMap {
     this._listeners[type].push(listener);
   }
 
+  /**
+   * イベントを発生させる
+   * @param {EventTarget} event イベントオブジェクト
+   */
   fireEvent(event) {
     if(!event.target){
       event.target = this;
@@ -220,11 +229,16 @@ export class ScoreMap {
     }
   }
 
+  /**
+   * イベントリスナを削除する
+   * @param {String} type イベントタイプ
+   * @param {Code} listener イベントリスナー
+   */
   removeEventListener(type, listener) {
     if(this._listeners && this._listeners[type] instanceof Array){
       let listeners = this._listeners[type];
       for(let i=0;i<listeners.length;i++){
-        if(listeners[i] === listeners){
+        if(listeners[i] === listener){
           listeners.splice(i,1);
           break;
         }
