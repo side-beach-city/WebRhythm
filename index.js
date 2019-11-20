@@ -213,6 +213,14 @@ document.getElementById("clear").addEventListener("click", () => {
 });
 
 /**
+ * データコントロールボタン
+ */
+document.getElementById("data_control").addEventListener("click", () => {
+  let dialog = document.getElementById('save_load_window');
+  dialog.showModal();
+});
+
+/**
  * ノートの状態が変更されたときのイベントハンドラ。
  * @param {EventTarget} e イベントオブジェクト
  */
