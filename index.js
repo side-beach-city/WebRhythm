@@ -1,14 +1,17 @@
 import {ScoreMap} from './scoremap.js';
+import {SaveList} from './savelists.js';
 const notes = 8;
 const scales = "cdefgabC".split("");
 const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
 const SETTING_NAMEROOT = "Display_";
 const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
+const SETTING_SAVELISTS = SETTING_NAMEROOT + "SaveList";
 const PAGE_MAX = 7;
 let rhythm = -1;
 let tickID;
 let audioCtx;
+let savelist;
 let scoremap;
 let timing = 500;
 let playState = true;
@@ -57,6 +60,7 @@ function init(){
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   scoremap = new ScoreMap();
+  savelist = new SaveList(SETTING_SAVELISTS);
   scoremap.addEventListener("note", noteReflect);
   scoremap.addEventListener("changepages", pageChanges);
   scoremap.loadMap(SETTING_SAVETONES);
@@ -219,6 +223,24 @@ document.getElementById("data_control").addEventListener("click", () => {
   let dialog = document.getElementById('save_load_window');
   dialog.showModal();
 });
+
+
+document.getElementById("dc_save_data").addEventListener("click", (e) => {
+  let list = document.getElementById("dc_savedata");
+  let index = list.selectedIndex;
+  if(index == -1){
+    let name = prompt("new file?");
+    e.preventDefault();
+  }
+})
+
+document.getElementById("dc_load_data").addEventListener("click", (e) => {
+  let list = document.getElementById("dc_savedata");
+  let index = list.selectedIndex;
+  if(index == -1){
+    e.preventDefault();
+  }
+})
 
 /**
  * ノートの状態が変更されたときのイベントハンドラ。
