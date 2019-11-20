@@ -147,17 +147,49 @@ export class ScoreMap {
   }
 
   /**
-   * ノート設定をlocalStorageに保存する
-   * @param {String} saveSlotName 保存する際の名称
-   * @returns {ScoreMap} 自分自身
+   * 保存するデータを取得する
+   * @returns {object} 保存用のデータ
    */
-  saveMap(saveSlotName){
+  get saveData(){
     let data = {
       "pages": []
     };
     this._pages.forEach((p) => {
       data.pages.push(p.notes);
     });
+    return data;
+  }
+
+  /**
+   * データをページデータに設定する
+   * @param {object}} data 読み込み用のデータ
+   */
+  loadData(data){
+    this._pages = [];
+    data.pages.forEach((d) => {
+      let p = new Page(d);
+      p.statusChangeHandler = () => {
+        this.fireEvent({
+          "type": EVENTNAME_NOTES,
+          "notes": this.currentPage.notes,
+        });
+      };
+      this._pages.push(p);
+    });
+    this.fireEvent({
+      "type": EVENTNAME_CHANGEPAGE,
+      "current": this._currentPageIndex + 1,
+      "length": this._pages.length,
+    });
+    this.switchPage(0);
+  }
+  /**
+   * ノート設定をlocalStorageに保存する
+   * @param {String} saveSlotName 保存する際の名称
+   * @returns {ScoreMap} 自分自身
+   */
+  saveMap(saveSlotName){
+    let data = this.saveData();
     localStorage.setItem(saveSlotName, JSON.stringify(data));
     return this;
   }
@@ -170,23 +202,7 @@ export class ScoreMap {
   loadMap(loadSlotName){
     let data = JSON.parse(localStorage.getItem(loadSlotName));
     if(data && data.pages){
-      this._pages = [];
-      data.pages.forEach((d) => {
-        let p = new Page(d);
-        p.statusChangeHandler = () => {
-          this.fireEvent({
-            "type": EVENTNAME_NOTES,
-            "notes": this.currentPage.notes,
-          });
-        };
-        this._pages.push(p);
-      });
-      this.fireEvent({
-        "type": EVENTNAME_CHANGEPAGE,
-        "current": this._currentPageIndex + 1,
-        "length": this._pages.length,
-      });
-      this.switchPage(0);
+      this.loadData(data);
     }else{
       this.formatScore();
     }
