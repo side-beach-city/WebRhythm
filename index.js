@@ -162,10 +162,10 @@ function playerRestart() {
   playerPlay();
 }
 
-document.getElementById("playpause").addEventListener("click", (e) => {
-  /**
-   * 再生・停止ボタン
-   */
+/**
+ * 再生・停止ボタン
+ */
+  document.getElementById("playpause").addEventListener("click", (e) => {
   if(playState){
     playerStop();
   }else{
