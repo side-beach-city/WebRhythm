@@ -189,7 +189,7 @@ export class ScoreMap {
    * @returns {ScoreMap} 自分自身
    */
   saveMap(saveSlotName){
-    let data = this.saveData();
+    let data = this.saveData;
     localStorage.setItem(saveSlotName, JSON.stringify(data));
     return this;
   }
