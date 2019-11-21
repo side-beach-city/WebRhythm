@@ -242,7 +242,9 @@ document.getElementById("data_control").addEventListener("click", () => {
  */
 document.getElementById("dc_save_data").addEventListener("click", (e) => {
   let list = document.getElementById("dc_savedata");
+  let slider = document.getElementById("speed");
   let data = scoremap.saveData;
+  data.speed = slider.value;
   let index = list.selectedIndex;
   if(index >= 0){
     if(list[index].id === "dc_savedata_newfile"){
@@ -272,7 +274,9 @@ document.getElementById("dc_load_data").addEventListener("click", (e) => {
       scoremap.formatScore();
     }else{
       let name = list.options[index].text;
-      scoremap.loadData(savelist.getItem(name));
+      let data = savelist.getItem(name);
+      scoremap.loadData(data);
+      if(data.speed) update_speed(parseInt(data.speed));
     }
   }else{
     e.preventDefault();
