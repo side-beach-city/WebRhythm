@@ -23,7 +23,18 @@
       <li class="cont" id="pagination_del"><a href="#" class="link">&#x2716;</a></li>
     </ul>
     <button id="clear" class="btn btn-secondary">&#x2747;</button>
+    <button id="data_control" class="btn btn-secondary">&#x1f4be;</button>
   </div>
+  <dialog id="save_load_window">
+    <form method="dialog">
+      <select id="dc_savedata" size="7">
+        <option id="dc_savedata_newfile">New File...</option>
+      </select>
+      <button id="dc_save_data" class="btn btn-primary">&#x1f4e5;</button>
+      <button id="dc_load_data" class="btn btn-secondary">&#x1f4e4;</button>
+      <button id="dc_cancel" class="btn btn-link">&times;</button>
+    </form>
+  </dialog>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/3.10.3/less.min.js"></script>
   <script src="https://cdn.honokak.osaka/honoka/4.3.1/js/bootstrap.min.js"></script>
   <script src="index.js" type="module"></script>

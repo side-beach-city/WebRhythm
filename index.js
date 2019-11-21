@@ -1,14 +1,17 @@
 import {ScoreMap} from './scoremap.js';
+import {SaveList} from './savelists.js';
 const notes = 8;
 const scales = "cdefgabC".split("");
 const scaleNotes = [60, 62, 64, 65, 67, 69, 71, 72];
 const SETTING_NAMEROOT = "Display_";
 const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
+const SETTING_SAVELISTS = SETTING_NAMEROOT + "SaveList";
 const PAGE_MAX = 7;
 let rhythm = -1;
 let tickID;
 let audioCtx;
+let savelist;
 let scoremap;
 let timing = 500;
 let playState = true;
@@ -57,6 +60,7 @@ function init(){
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   scoremap = new ScoreMap();
+  savelist = new SaveList(SETTING_SAVELISTS);
   scoremap.addEventListener("note", noteReflect);
   scoremap.addEventListener("changepages", pageChanges);
   scoremap.loadMap(SETTING_SAVETONES);
@@ -211,6 +215,73 @@ document.getElementById("clear").addEventListener("click", () => {
   scoremap.currentPage.clean();
   scoremap.saveMap(SETTING_SAVETONES);
 });
+
+/**
+ * データコントロールボタン
+ */
+document.getElementById("data_control").addEventListener("click", () => {
+  let dialog = document.getElementById('save_load_window');
+  let list = document.getElementById("dc_savedata");
+  let newitem = document.getElementById("dc_savedata_newfile");
+  // リストクリア
+  while (list[0] != newitem) {
+    list.remove(0);
+  }
+  // リスト生成
+  savelist.getNameList().forEach(n => {
+    let option = document.createElement("option");
+    option.text = n;
+    list.add(option, newitem);
+  });
+  list.selectedIndex = 0;
+  dialog.showModal();
+});
+
+/**
+ * データを保存するボタン
+ */
+document.getElementById("dc_save_data").addEventListener("click", (e) => {
+  let list = document.getElementById("dc_savedata");
+  let slider = document.getElementById("speed");
+  let data = scoremap.saveData;
+  data.speed = slider.value;
+  let index = list.selectedIndex;
+  if(index >= 0){
+    if(list[index].id === "dc_savedata_newfile"){
+      let name = prompt("new file?");
+      if(name){
+        savelist.setItem(name, data);
+      }else{
+        e.preventDefault();
+      }
+    }else{
+      let name = list.options[index].text;
+      savelist.setItem(name, data);
+    }
+  }else{
+    e.preventDefault();
+  }
+})
+
+/**
+ * データを読み込むボタン
+ */
+document.getElementById("dc_load_data").addEventListener("click", (e) => {
+  let list = document.getElementById("dc_savedata");
+  let index = list.selectedIndex;
+  if(index >= 0){
+    if(list[index].id === "dc_savedata_newfile"){
+      scoremap.formatScore();
+    }else{
+      let name = list.options[index].text;
+      let data = savelist.getItem(name);
+      scoremap.loadData(data);
+      if(data.speed) update_speed(parseInt(data.speed));
+    }
+  }else{
+    e.preventDefault();
+  }
+})
 
 /**
  * ノートの状態が変更されたときのイベントハンドラ。
