@@ -221,23 +221,60 @@ document.getElementById("clear").addEventListener("click", () => {
  */
 document.getElementById("data_control").addEventListener("click", () => {
   let dialog = document.getElementById('save_load_window');
+  let list = document.getElementById("dc_savedata");
+  let newitem = document.getElementById("dc_savedata_newfile");
+  // リストクリア
+  while (list[0] != newitem) {
+    list.remove(0);
+  }
+  // リスト生成
+  savelist.getNameList().forEach(n => {
+    let option = document.createElement("option");
+    option.text = n;
+    list.add(option, newitem);
+  });
+  list.selectedIndex = 0;
   dialog.showModal();
 });
 
-
+/**
+ * データを保存するボタン
+ */
 document.getElementById("dc_save_data").addEventListener("click", (e) => {
   let list = document.getElementById("dc_savedata");
+  let data = scoremap.saveData;
   let index = list.selectedIndex;
-  if(index == -1){
-    let name = prompt("new file?");
+  if(index >= 0){
+    if(list[index].id === "dc_savedata_newfile"){
+      let name = prompt("new file?");
+      if(name){
+        savelist.setItem(name, data);
+      }else{
+        e.preventDefault();
+      }
+    }else{
+      let name = list.options[index].text;
+      savelist.setItem(name, data);
+    }
+  }else{
     e.preventDefault();
   }
 })
 
+/**
+ * データを読み込むボタン
+ */
 document.getElementById("dc_load_data").addEventListener("click", (e) => {
   let list = document.getElementById("dc_savedata");
   let index = list.selectedIndex;
-  if(index == -1){
+  if(index >= 0){
+    if(list[index].id === "dc_savedata_newfile"){
+      e.preventDefault();
+    }else{
+      let name = list.options[index].text;
+      scoremap.loadData(savelist.getItem(name));
+    }
+  }else{
     e.preventDefault();
   }
 })

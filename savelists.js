@@ -13,8 +13,16 @@ export class SaveList {
     if(n){
       this._saveList = JSON.parse(n);
     }else{
-      this._saveList = {};
+      this._saveList = [];
     }
+  }
+
+  /**
+   * データ名のリストを取得する
+   * @returns {Array} 保存されているデータの名称リスト
+   */
+  getNameList(){
+    return this._saveList.map(d => d.name);
   }
 
   /**
@@ -22,7 +30,7 @@ export class SaveList {
    * @param {String} name データ名
    */
   getItem(name){
-    return this._saveList[name];
+    return this._saveList.find(d => d.name == name);
   }
 
   /**
@@ -31,7 +39,13 @@ export class SaveList {
    * @param {object} data データ
    */
   setItem(name, data){
-    this._saveList[name] = data;
+    data.name = name;
+    let index = this._saveList.findIndex(d => d.name == name);
+    if(index >= 0){
+      this._saveList[index] = data;
+    }else{
+      this._saveList.push(data);
+    }
     this._saveDataList();
   }
 
