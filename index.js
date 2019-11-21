@@ -269,7 +269,7 @@ document.getElementById("dc_load_data").addEventListener("click", (e) => {
   let index = list.selectedIndex;
   if(index >= 0){
     if(list[index].id === "dc_savedata_newfile"){
-      e.preventDefault();
+      scoremap.formatScore();
     }else{
       let name = list.options[index].text;
       scoremap.loadData(savelist.getItem(name));
