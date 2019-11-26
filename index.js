@@ -74,6 +74,9 @@ function init(){
 function tick(){
   if(playState){
     let last = null;
+    let rewind = !(rhythm < notes - 1);
+    let autoroll = document.getElementById("auto_roll").
+      getAttribute("aria-pressed").toLowerCase() === "true";
     if(last >= 0){
       last = document.getElementById(`nN${rhythm}`);
     }
@@ -83,14 +86,20 @@ function tick(){
       last.classList.remove("note");
     }
     now.classList.add("note");
-    // note
-    scales.forEach((n, i) => {
-      let note = document.getElementById(`n${n}${rhythm}`);
-      if(note.classList.contains("on")){
-        play(mtof(scaleNotes[i]));
-      }
-    });
-    nextTick();
+    if(rewind && autoroll){
+      scoremap.switchNext(true);
+      playerRestart(true);
+      tick();
+    }else{
+      // note
+      scales.forEach((n, i) => {
+        let note = document.getElementById(`n${n}${rhythm}`);
+        if(note.classList.contains("on")){
+          play(mtof(scaleNotes[i]));
+        }
+      });
+      nextTick();
+    }
   }
 }
 
@@ -138,12 +147,13 @@ function play(hz) {
 
 /**
  * 音楽の再生をただちに開始する
+ * @param {Boolean} noTimer メソッド内でタイマーの設定を行わない場合true
  */
-function playerPlay() {
+function playerPlay(noTimer = false) {
   playState = true;
   rhythm = -1;
   document.getElementById("playpause").textContent = "■";
-  nextTick();
+  if(!noTimer) nextTick();
 }
 
 /**
@@ -160,10 +170,11 @@ function playerStop() {
 
 /**
  * 音楽の再生を停止し・再開する
+ * @param {Boolean} noTimer メソッド内でタイマーの設定を行わない場合true
  */
-function playerRestart() {
+function playerRestart(noTimer = false) {
   playerStop();
-  playerPlay();
+  playerPlay(noTimer);
 }
 
 /**
