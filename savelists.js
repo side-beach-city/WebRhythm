@@ -65,7 +65,7 @@ export class SaveList {
       ary[i] = c.charCodeAt(0);
     });
     let data = new Zlib.Deflate(new Uint8Array(ary)).compress();
-    return btoa(String.fromCharCode.apply(null, data));
+    return encodeURIComponent(btoa(String.fromCharCode.apply(null, data)));
   }
 
   /**
@@ -73,7 +73,7 @@ export class SaveList {
    * @param {String} data エクスポートされた文字列
    */
   import(data){
-    let compressData = atob(data);
+    let compressData = atob(decodeURIComponent(data));
     let ary = [compressData.length];
     compressData.split("").forEach((c, i) => {
       ary[i] = c.charCodeAt(0);
