@@ -50,6 +50,23 @@ export class SaveList {
   }
 
   /**
+   * エクスポートのための文字列を取得する
+   * @returns {String} エクスポートのための文字列
+   */
+  export(){
+    return btoa(encodeURIComponent(JSON.stringify(this._saveList)));
+  }
+
+  /**
+   * 文字列データよりデータリストを読み込む
+   * @param {String} data エクスポートされた文字列
+   */
+  import(data){
+    this._saveList = JSON.parse(decodeURIComponent(atob(data)));
+    this._saveDataList();
+  }
+
+  /**
    * データリストを保存する
    */
   _saveDataList(){
