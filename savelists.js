@@ -5,15 +5,20 @@ export class SaveList {
   /**
    * 初期化
    * @param {String} saveName データを保存するスロット名
+   * @param {String} importData データをインポートする場合、そのインポートデータ
    */
-  constructor(saveName) {
+  constructor(saveName, importData) {
     this._saveName = saveName;
     this._document = document;
-    let n = localStorage.getItem(saveName);
-    if(n){
-      this._saveList = JSON.parse(n);
+    if(importData){
+      this.import(importData);
     }else{
-      this._saveList = [];
+      let n = localStorage.getItem(saveName);
+      if(n){
+        this._saveList = JSON.parse(n);
+      }else{
+        this._saveList = [];
+      }
     }
   }
 

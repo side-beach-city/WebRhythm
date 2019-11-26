@@ -60,7 +60,12 @@ function init(){
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   scoremap = new ScoreMap();
-  savelist = new SaveList(SETTING_SAVELISTS);
+  let importdata = undefined;
+  if(location.search){
+    let q = location.search.slice(1).split(/[&;]/).map(p => p.split('=')).reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
+    importdata = q["d"];
+  }
+  savelist = new SaveList(SETTING_SAVELISTS, importdata);
   scoremap.addEventListener("note", noteReflect);
   scoremap.addEventListener("changepages", pageChanges);
   scoremap.loadMap(SETTING_SAVETONES);
