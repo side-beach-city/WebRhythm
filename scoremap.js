@@ -13,7 +13,7 @@ const EVENTNAME_CHANGEPAGE = "changepages"
  * @param {notes} Array 現在のページのノートリスト。
  */
 const EVENTNAME_NOTES = "note";
-const scales = "cdefgabC".split("");
+const scales = "cdefgabCDEFGAB".split("");
 /**
  * スコアを管理するクラス
  */
