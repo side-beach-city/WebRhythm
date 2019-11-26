@@ -294,6 +294,17 @@ document.getElementById("dc_load_data").addEventListener("click", (e) => {
   }
 })
 
+document.getElementById("dc_export_data").addEventListener("click", (e) => {
+  // エクスポート文字列生成
+  let exportStr = location.hostname == "127.0.0.1" ? "https://side-beach-city.github.io/WebRhythm/" : location.origin;
+  exportStr += "?d=";
+  exportStr += savelist.export();
+  // open
+  let url = "https://chart.googleapis.com/chart?cht=qr&cht=qr&chs=500x500&chl=" + exportStr;
+  window.open(url, "_blank");
+  e.preventDefault();
+});
+
 /**
  * ノートの状態が変更されたときのイベントハンドラ。
  * @param {EventTarget} e イベントオブジェクト
