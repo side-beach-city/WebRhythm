@@ -60,7 +60,12 @@ function init(){
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   scoremap = new ScoreMap();
-  savelist = new SaveList(SETTING_SAVELISTS);
+  let importdata = undefined;
+  if(location.search){
+    let q = location.search.slice(1).split(/[&;]/).map(p => p.split('=')).reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
+    importdata = q["d"];
+  }
+  savelist = new SaveList(SETTING_SAVELISTS, importdata);
   scoremap.addEventListener("note", noteReflect);
   scoremap.addEventListener("changepages", pageChanges);
   scoremap.loadMap(SETTING_SAVETONES);
@@ -293,6 +298,17 @@ document.getElementById("dc_load_data").addEventListener("click", (e) => {
     e.preventDefault();
   }
 })
+
+document.getElementById("dc_export_data").addEventListener("click", (e) => {
+  // エクスポート文字列生成
+  let exportStr = location.hostname == "127.0.0.1" ? "https://side-beach-city.github.io/WebRhythm/" : location.origin;
+  exportStr += "?d=";
+  exportStr += savelist.export();
+  // open
+  let url = "https://chart.googleapis.com/chart?cht=qr&cht=qr&chs=500x500&chl=" + exportStr;
+  window.open(url, "_blank");
+  e.preventDefault();
+});
 
 /**
  * ノートの状態が変更されたときのイベントハンドラ。
