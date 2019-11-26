@@ -7,7 +7,7 @@ const SETTING_NAMEROOT = "Display_";
 const SETTING_SAVETONES = SETTING_NAMEROOT + "Notes";
 const SETTING_SAVESPEED = SETTING_NAMEROOT + "Speed";
 const SETTING_SAVELISTS = SETTING_NAMEROOT + "SaveList";
-const PAGE_MAX = 7;
+const PAGE_MAX = 20;
 let rhythm = -1;
 let tickID;
 let audioCtx;
