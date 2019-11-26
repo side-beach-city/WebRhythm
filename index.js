@@ -64,6 +64,7 @@ function init(){
   if(location.search){
     let q = location.search.slice(1).split(/[&;]/).map(p => p.split('=')).reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
     importdata = q["d"];
+    location.search = "";
   }
   savelist = new SaveList(SETTING_SAVELISTS, importdata);
   scoremap.addEventListener("note", noteReflect);
