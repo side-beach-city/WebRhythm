@@ -123,6 +123,18 @@ export class ScoreMap {
   }
 
   /**
+   * 次のページに切り替える
+   * @param {Boolean} looping 最後のページを表示している場合、最初のページに移動するか、移動せずにリロードだけを行うか。
+   * @return {Boolean} ページの切り替えに成功した場合はtrue
+   */
+  switchNext(looping){
+    let now = this.pageIndex;
+    let next = now < this.pageLength - 1 ? now + 1 : looping ? 0 : now;
+    this.switchPage(next);
+    return now != next;
+  }
+
+  /**
    * 現在開いているページのインデックスを取得する
    * @returns {Number} ページインデックス
    */
