@@ -302,7 +302,8 @@ document.getElementById("dc_load_data").addEventListener("click", (e) => {
 
 document.getElementById("dc_export_data").addEventListener("click", (e) => {
   // エクスポート文字列生成
-  let exportStr = location.hostname == "127.0.0.1" ? "https://side-beach-city.github.io/WebRhythm/" : location.origin;
+  let exportStr = location.hostname == "127.0.0.1" ?
+    "https://side-beach-city.github.io/WebRhythm/" : location.origin + location.pathname;
   exportStr += "?d=";
   exportStr += savelist.export();
   // open
