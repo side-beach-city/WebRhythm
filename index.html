@@ -7,34 +7,65 @@
   <link rel="stylesheet" href="https://cdn.honokak.osaka/honoka/4.3.1/css/bootstrap.min.css"/>
   <link rel="stylesheet/less" type="text/css" href="index.less" />
   <title>WebRhythm</title>
+
+  <!--CLARITY ICONS STYLE-->
+  <link rel="stylesheet" href="https://unpkg.com/clarity-icons/clarity-icons.min.css">
+
+  <!--CLARITY ICONS DEPENDENCY: CUSTOM ELEMENTS POLYFILL-->
+  <script src="https://unpkg.com/@webcomponents/custom-elements/custom-elements.min.js"></script>
+
+  <!--CLARITY ICONS API & ALL ICON SETS-->
+  <script src="https://unpkg.com/clarity-icons/clarity-icons.min.js"></script>
 </head>
 <body>
   <div id="playview">
   </div>
   <div id="controller" class="form-group">
-    <button id="playpause" class="btn btn-primary">■</button>
+    <button id="playpause" class="btn btn-primary">
+      <clr-icon shape="stop" id="playpause_icon" class="is-solid"></clr-icon>
+    </button>
     <div id="speed_block">
       <label id="speed_value" for="speed"></label>
       <input id="speed" class="form-control-range" type="range" value="500" min="0" max="1000" step="100"/>
     </div>
     <ul class="pagination" id="pagination">
-      <li class="cont" id="pagination_prev"><a href="#" class="link">&laquo;</a></li>
-      <li class="cont" id="pagination_next"><a href="#" class="link">&raquo;</a></li>
-      <li class="cont" id="pagination_del"><a href="#" class="link">&#x2716;</a></li>
+      <li class="cont" id="pagination_prev"><a href="#" class="link">
+        <clr-icon shape="rewind" class="is-solid"></clr-icon>
+      </a></li>
+      <li class="cont" id="pagination_next"><a href="#" class="link">
+        <clr-icon shape="fast-forward"></clr-icon>
+      </a></li>
+      <li class="cont" id="pagination_del"><a href="#" class="link">
+        <clr-icon shape="minus" class="is-solid"></clr-icon>
+      </a></li>
     </ul>
-    <button id="clear" class="btn btn-secondary">&#x2747;</button>
-    <button id="data_control" class="btn btn-secondary">&#x1f4be;</button>
-    <button id="auto_roll" class="btn btn-secondary" data-toggle="button" aria-pressed="false" autocomplete="off">&#x27a1;</button>
+    <button id="clear" class="btn btn-secondary">
+      <clr-icon shape="refresh"></clr-icon>
+    </button>
+    <button id="data_control" class="btn btn-secondary">
+      <clr-icon shape="floppy" class="is-solid"></clr-icon>
+    </button>
+    <button id="auto_roll" class="btn btn-secondary" data-toggle="button" aria-pressed="false" autocomplete="off">
+      <clr-icon shape="step-forward"></clr-icon>
+    </button>
   </div>
   <dialog id="save_load_window">
     <form method="dialog">
       <select id="dc_savedata" size="7">
         <option id="dc_savedata_newfile">New File...</option>
       </select>
-      <button id="dc_save_data" class="btn btn-primary">&#x1f4e5;</button>
-      <button id="dc_load_data" class="btn btn-secondary">&#x1f4e4;</button>
-      <button id="dc_export_data" class="btn btn-secondary">&#x1f4dc;</button>
-      <button id="dc_cancel" class="btn btn-link">&times;</button>
+      <button id="dc_save_data" class="btn btn-primary">
+        <clr-icon shape="export"></clr-icon>
+      </button>
+      <button id="dc_load_data" class="btn btn-secondary">
+        <clr-icon shape="import"></clr-icon>
+      </button>
+      <button id="dc_export_data" class="btn btn-secondary">
+        <clr-icon shape="qr-code"></clr-icon>
+      </button>
+      <button id="dc_cancel" class="btn btn-link">
+        <clr-icon shape="times"></clr-icon>
+      </button>
     </form>
   </dialog>
   <script
