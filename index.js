@@ -72,8 +72,13 @@ function init(){
   scoremap = new ScoreMap();
   let importdata = undefined;
   if(location.search){
-    let q = location.search.slice(1).split(/[&;]/).map(p => p.split('=')).reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
-    importdata = q["d"];
+    let q = location.search.slice(1).split(/[&;]/).map(p => p.split('='))
+    let vars = {};
+    q.forEach(o => {
+      qs = o.split("=");
+      vars[qs[0]] = qs[1];
+    });
+    importdata = vars["d"];
     location.search = "";
   }
   savelist = new SaveList(SETTING_SAVELISTS, importdata);
