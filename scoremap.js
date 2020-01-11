@@ -277,12 +277,8 @@ export class ScoreMap {
 
 class Page {
 
-  /**
-   * ページの状態が変化したときに呼び出されるハンドラ
-   */
-  statusChangeHandler = undefined;
-
   constructor(notes) {
+    this.statusChangeHandler = undefined;
     if(notes){
       this.notes = notes;
     }else{
