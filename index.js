@@ -72,9 +72,13 @@ function init(){
   scoremap = new ScoreMap();
   let importdata = undefined;
   if(location.search){
-    let q = location.search.slice(1).split(/[&;]/).map(p => p.split('=')).reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
-    importdata = q["d"];
-    location.search = "";
+    let q = location.search.slice(1).split(/[&;]/);
+    let vars = {};
+    q.forEach(o => {
+      let qs = o.split("=");
+      vars[qs[0]] = qs[1];
+    });
+    importdata = vars["d"];
   }
   savelist = new SaveList(SETTING_SAVELISTS, importdata);
   scoremap.addEventListener("note", noteReflect);
@@ -248,6 +252,9 @@ document.getElementById("clear").addEventListener("click", () => {
  */
 document.getElementById("data_control").addEventListener("click", () => {
   let dialog = document.getElementById('save_load_window');
+  if(!dialog.close){
+    dialog.close = () => { document.getElementById('save_load_window').style.display = "none"; };
+  }
   let list = document.getElementById("dc_savedata");
   let newitem = document.getElementById("dc_savedata_newfile");
   // リストクリア
@@ -261,7 +268,11 @@ document.getElementById("data_control").addEventListener("click", () => {
     list.add(option, newitem);
   });
   list.selectedIndex = 0;
-  dialog.showModal();
+  dialog.style.display = "block";
+  let lp = window.innerWidth / 2 - dialog.offsetWidth / 2;
+  let tp = window.innerHeight / 2 - dialog.offsetHeight / 2;
+  dialog.style.left = `${lp}px`;
+  dialog.style.top = `${tp}px`;
 });
 
 /**
@@ -271,6 +282,7 @@ document.getElementById("dc_save_data").addEventListener("click", (e) => {
   let list = document.getElementById("dc_savedata");
   let slider = document.getElementById("speed");
   let data = scoremap.saveData;
+  let fclose = false;
   data.speed = slider.value;
   let index = list.selectedIndex;
   if(index >= 0){
@@ -278,15 +290,17 @@ document.getElementById("dc_save_data").addEventListener("click", (e) => {
       let name = prompt("new file?");
       if(name){
         savelist.setItem(name, data);
-      }else{
-        e.preventDefault();
+        fclose = true;
       }
     }else{
       let name = list.options[index].text;
       savelist.setItem(name, data);
+      fclose = true;
     }
-  }else{
-    e.preventDefault();
+  }
+
+  if(fclose){
+    document.getElementById('save_load_window').close();
   }
 })
 
@@ -304,9 +318,8 @@ document.getElementById("dc_load_data").addEventListener("click", (e) => {
       let data = savelist.getItem(name);
       scoremap.loadData(data);
       if(data.speed) update_speed(parseInt(data.speed));
+      document.getElementById('save_load_window').close();
     }
-  }else{
-    e.preventDefault();
   }
 })
 
@@ -319,7 +332,10 @@ document.getElementById("dc_export_data").addEventListener("click", (e) => {
   // open
   let url = "https://chart.googleapis.com/chart?cht=qr&cht=qr&chs=500x500&chl=" + exportStr;
   window.open(url, "_blank");
-  e.preventDefault();
+});
+
+document.getElementById("dc_cancel").addEventListener("click", (e) => {
+  document.getElementById('save_load_window').close();
 });
 
 /**
