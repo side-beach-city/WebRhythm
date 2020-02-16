@@ -49,25 +49,23 @@
       <clr-icon shape="step-forward"></clr-icon>
     </button>
   </div>
-  <dialog id="save_load_window">
-    <form method="dialog">
-      <select id="dc_savedata" size="7">
-        <option id="dc_savedata_newfile">New File...</option>
-      </select>
-      <button id="dc_save_data" class="btn btn-primary">
-        <clr-icon shape="export"></clr-icon>
-      </button>
-      <button id="dc_load_data" class="btn btn-secondary">
-        <clr-icon shape="import"></clr-icon>
-      </button>
-      <button id="dc_export_data" class="btn btn-secondary">
-        <clr-icon shape="qr-code"></clr-icon>
-      </button>
-      <button id="dc_cancel" class="btn btn-link">
-        <clr-icon shape="times"></clr-icon>
-      </button>
-    </form>
-  </dialog>
+  <div id="save_load_window" class="card">
+    <select id="dc_savedata" size="7">
+      <option id="dc_savedata_newfile">New File...</option>
+    </select>
+    <button id="dc_save_data" class="btn btn-primary">
+      <clr-icon shape="export"></clr-icon>
+    </button>
+    <button id="dc_load_data" class="btn btn-secondary">
+      <clr-icon shape="import"></clr-icon>
+    </button>
+    <button id="dc_export_data" class="btn btn-secondary">
+      <clr-icon shape="qr-code"></clr-icon>
+    </button>
+    <button id="dc_cancel" class="btn btn-link">
+      <clr-icon shape="times"></clr-icon>
+    </button>
+  </div>
   <script
     src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/3.10.3/less.min.js"></script>

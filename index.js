@@ -265,7 +265,11 @@ document.getElementById("data_control").addEventListener("click", () => {
     list.add(option, newitem);
   });
   list.selectedIndex = 0;
-  dialog.showModal();
+  dialog.style.display = "block";
+  let lp = window.innerWidth / 2 - dialog.offsetWidth / 2;
+  let tp = window.innerHeight / 2 - dialog.offsetHeight / 2;
+  dialog.style.left = `${lp}px`;
+  dialog.style.top = `${tp}px`;
 });
 
 /**
@@ -324,6 +328,11 @@ document.getElementById("dc_export_data").addEventListener("click", (e) => {
   let url = "https://chart.googleapis.com/chart?cht=qr&cht=qr&chs=500x500&chl=" + exportStr;
   window.open(url, "_blank");
   e.preventDefault();
+});
+
+document.getElementById("dc_cancel").addEventListener("click", (e) => {
+  let dialog = document.getElementById('save_load_window');
+  dialog.style.display = "none";
 });
 
 /**

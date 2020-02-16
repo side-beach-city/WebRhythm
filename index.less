@@ -132,12 +132,16 @@ clr-icon {
 }
 
 #save_load_window{
-  form{
-    margin: 0 8px;
-    #dc_savedata{
-      display: block;
-      width: 100%;
-      margin: 8px 0;
-    }
+  display: none;
+  position: fixed;
+  top: 50%;
+  height: auto;
+  overflow: hidden;
+  z-index: 9999;
+  margin: 0 8px;
+  #dc_savedata{
+    display: block;
+    width: 100%;
+    margin: 8px 0;
   }
 }
